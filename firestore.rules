@@ -1,0 +1,303 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global safety net: deny all by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Primitive Helpers ---
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isBootstrapAdmin() {
+      return isSignedIn() && request.auth.token.email == 'trunghieuptdtntnamtramy@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrapAdmin() || (
+        isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // --- Validation Blueprints ---
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'displayName', 'role', 'requestedRole', 'teacherApproved', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'displayName', 'role', 'requestedRole', 'teacherApproved', 'className', 'homeroom', 'subjectTeacher', 'createdAt', 'updatedAt'])
+        && data.uid is string && data.uid.size() > 0 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100
+        && data.role in ['student', 'teacher']
+        && data.requestedRole in ['student', 'teacher']
+        && data.teacherApproved is bool
+        && (!('className' in data) || (data.className is string && data.className.size() <= 40))
+        && (!('homeroom' in data) || (data.homeroom is string && data.homeroom.size() <= 40))
+        && (!('subjectTeacher' in data) || (data.subjectTeacher is string && data.subjectTeacher.size() <= 80))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidUserPrivateInfo(data) {
+      return data.keys().hasAll(['uid', 'email', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'email', 'phone', 'birthDate', 'updatedAt'])
+        && data.uid is string && data.uid.size() > 0 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.email is string && data.email.size() <= 160
+        && (!('phone' in data) || (data.phone is string && data.phone.size() <= 25))
+        && (!('birthDate' in data) || (data.birthDate is string && data.birthDate.size() <= 20))
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidStudyTask(data) {
+      return data.keys().hasAll(['userId', 'name', 'subject', 'goal', 'dueDate', 'studySlot', 'done', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['userId', 'name', 'subject', 'goal', 'dueDate', 'studySlot', 'done', 'createdAt', 'updatedAt'])
+        && data.userId is string && data.userId.size() > 0 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 200
+        && data.subject is string && data.subject.size() >= 1 && data.subject.size() <= 80
+        && data.goal is string && data.goal.size() >= 1 && data.goal.size() <= 300
+        && data.dueDate is string && data.dueDate.size() == 10 && data.dueDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && data.studySlot is string && data.studySlot.size() >= 1 && data.studySlot.size() <= 80
+        && data.done is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidThinkReflection(data) {
+      return data.keys().hasAll(['userId', 'subject', 'question', 'answer', 'confidence', 'createdAt'])
+        && data.keys().hasOnly(['userId', 'subject', 'question', 'answer', 'confidence', 'createdAt'])
+        && data.userId is string && data.userId.size() > 0 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.subject is string && data.subject.size() >= 1 && data.subject.size() <= 80
+        && data.question is string && data.question.size() >= 1 && data.question.size() <= 400
+        && data.answer is string && data.answer.size() >= 1 && data.answer.size() <= 3000
+        && data.confidence is string && data.confidence.size() >= 1 && data.confidence.size() <= 60
+        && data.createdAt is timestamp;
+    }
+
+    function isValidAiSession(data) {
+      return data.keys().hasAll(['userId', 'subject', 'question', 'guidance', 'model', 'createdAt'])
+        && data.keys().hasOnly(['userId', 'subject', 'question', 'priorThinking', 'guidance', 'model', 'createdAt'])
+        && data.userId is string && data.userId.size() > 0 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.subject is string && data.subject.size() >= 1 && data.subject.size() <= 80
+        && data.question is string && data.question.size() >= 1 && data.question.size() <= 2000
+        && (!('priorThinking' in data) || (data.priorThinking is string && data.priorThinking.size() <= 3000))
+        && data.guidance is string && data.guidance.size() >= 1 && data.guidance.size() <= 8000
+        && data.model is string && data.model.size() >= 1 && data.model.size() <= 60
+        && data.createdAt is timestamp;
+    }
+
+    function isValidFactCheckRecord(data) {
+      return data.keys().hasAll(['userId', 'content', 'source', 'conclusion', 'verdict', 'createdAt'])
+        && data.keys().hasOnly(['userId', 'content', 'source', 'conclusion', 'verdict', 'createdAt'])
+        && data.userId is string && data.userId.size() > 0 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.content is string && data.content.size() >= 1 && data.content.size() <= 3000
+        && data.source is string && data.source.size() >= 1 && data.source.size() <= 1000
+        && data.conclusion is string && data.conclusion.size() >= 1 && data.conclusion.size() <= 2000
+        && data.verdict in ['accurate', 'needs_revision', 'inaccurate']
+        && data.createdAt is timestamp;
+    }
+
+    function isValidSelfTestRecord(data) {
+      return data.keys().hasAll(['userId', 'subject', 'lesson', 'explain', 'apply', 'level', 'createdAt'])
+        && data.keys().hasOnly(['userId', 'subject', 'lesson', 'explain', 'apply', 'level', 'createdAt'])
+        && data.userId is string && data.userId.size() > 0 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.subject is string && data.subject.size() >= 1 && data.subject.size() <= 80
+        && data.lesson is string && data.lesson.size() >= 1 && data.lesson.size() <= 200
+        && data.explain is string && data.explain.size() >= 1 && data.explain.size() <= 3000
+        && data.apply is string && data.apply.size() >= 1 && data.apply.size() <= 3000
+        && data.level is string && data.level.size() >= 1 && data.level.size() <= 80
+        && data.createdAt is timestamp;
+    }
+
+    function isValidSurveySubmission(data) {
+      return data.keys().hasAll(['userId', 'phase', 'answers', 'average', 'createdAt'])
+        && data.keys().hasOnly(['userId', 'phase', 'answers', 'average', 'createdAt'])
+        && data.userId is string && data.userId.size() > 0 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.phase in ['before', 'after']
+        && data.answers is list && data.answers.size() == 7
+        && data.answers[0] is int && data.answers[0] >= 1 && data.answers[0] <= 5
+        && data.answers[1] is int && data.answers[1] >= 1 && data.answers[1] <= 5
+        && data.answers[2] is int && data.answers[2] >= 1 && data.answers[2] <= 5
+        && data.answers[3] is int && data.answers[3] >= 1 && data.answers[3] <= 5
+        && data.answers[4] is int && data.answers[4] >= 1 && data.answers[4] <= 5
+        && data.answers[5] is int && data.answers[5] >= 1 && data.answers[5] <= 5
+        && data.answers[6] is int && data.answers[6] >= 1 && data.answers[6] <= 5
+        && data.average is number && data.average >= 1 && data.average <= 5
+        && data.createdAt is timestamp;
+    }
+
+    // --- Collection Rules ---
+
+    // Connection check document
+    match /test/connection {
+      allow get: if isSignedIn();
+    }
+
+    // Admin registry (read-only for owner/admin; managed out-of-band)
+    match /admins/{adminUid} {
+      allow get: if isValidId(adminUid) && (isOwner(adminUid) || isAdmin());
+    }
+
+    // User profile (non-PII)
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isBootstrapAdmin();
+
+      allow create: if isValidId(userId)
+        && isOwner(userId)
+        && isValidUserProfile(incoming())
+        && incoming().uid == request.auth.uid
+        && incoming().role == 'student'
+        && incoming().teacherApproved == false
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isSignedIn()
+        && isValidId(userId)
+        && isValidUserProfile(incoming())
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          (isOwner(userId)
+            && incoming().role == existing().role
+            && incoming().teacherApproved == existing().teacherApproved
+            && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'requestedRole', 'className', 'homeroom', 'subjectTeacher', 'updatedAt']))
+          || (isAdmin()
+            && incoming().diff(existing()).affectedKeys().hasOnly(['role', 'teacherApproved', 'updatedAt']))
+        );
+
+      // Isolated PII subcollection
+      match /private/info {
+        allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+
+        allow create: if isValidId(userId)
+          && isOwner(userId)
+          && isValidUserPrivateInfo(incoming())
+          && incoming().uid == request.auth.uid
+          && incoming().updatedAt == request.time;
+
+        allow update: if isSignedIn()
+          && isValidId(userId)
+          && isOwner(userId)
+          && isValidUserPrivateInfo(incoming())
+          && incoming().uid == existing().uid
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly(['email', 'phone', 'birthDate', 'updatedAt']);
+      }
+    }
+
+    // Study Plan tasks
+    match /studyTasks/{taskId} {
+      allow get: if isValidId(taskId) && (isOwner(existing().userId) || isAdmin());
+      allow list: if isSignedIn() && (existing().userId == request.auth.uid || isBootstrapAdmin());
+
+      allow create: if isValidId(taskId)
+        && isSignedIn()
+        && isValidStudyTask(incoming())
+        && incoming().userId == request.auth.uid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isSignedIn()
+        && isValidId(taskId)
+        && isValidStudyTask(incoming())
+        && incoming().userId == existing().userId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (isOwner(existing().userId) || isAdmin())
+        && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['done', 'updatedAt']) ||
+          incoming().diff(existing()).affectedKeys().hasOnly(['name', 'subject', 'goal', 'dueDate', 'studySlot', 'done', 'updatedAt'])
+        );
+
+      allow delete: if isValidId(taskId) && (isOwner(existing().userId) || isAdmin());
+    }
+
+    // Think First reflections (immutable once recorded, deletable by owner)
+    match /thinkReflections/{thinkId} {
+      allow get: if isValidId(thinkId) && (isOwner(existing().userId) || isAdmin());
+      allow list: if isSignedIn() && (existing().userId == request.auth.uid || isBootstrapAdmin());
+
+      allow create: if isValidId(thinkId)
+        && isSignedIn()
+        && isValidThinkReflection(incoming())
+        && incoming().userId == request.auth.uid
+        && incoming().createdAt == request.time;
+
+      allow delete: if isValidId(thinkId) && (isOwner(existing().userId) || isAdmin());
+    }
+
+    // AI Coach sessions (immutable once recorded, deletable by owner)
+    match /aiSessions/{sessionId} {
+      allow get: if isValidId(sessionId) && (isOwner(existing().userId) || isAdmin());
+      allow list: if isSignedIn() && (existing().userId == request.auth.uid || isBootstrapAdmin());
+
+      allow create: if isValidId(sessionId)
+        && isSignedIn()
+        && isValidAiSession(incoming())
+        && incoming().userId == request.auth.uid
+        && incoming().createdAt == request.time;
+
+      allow delete: if isValidId(sessionId) && (isOwner(existing().userId) || isAdmin());
+    }
+
+    // Fact Check records (immutable once recorded, deletable by owner)
+    match /factChecks/{factId} {
+      allow get: if isValidId(factId) && (isOwner(existing().userId) || isAdmin());
+      allow list: if isSignedIn() && (existing().userId == request.auth.uid || isBootstrapAdmin());
+
+      allow create: if isValidId(factId)
+        && isSignedIn()
+        && isValidFactCheckRecord(incoming())
+        && incoming().userId == request.auth.uid
+        && incoming().createdAt == request.time;
+
+      allow delete: if isValidId(factId) && (isOwner(existing().userId) || isAdmin());
+    }
+
+    // Self Test records (immutable once recorded, deletable by owner)
+    match /selfTests/{testId} {
+      allow get: if isValidId(testId) && (isOwner(existing().userId) || isAdmin());
+      allow list: if isSignedIn() && (existing().userId == request.auth.uid || isBootstrapAdmin());
+
+      allow create: if isValidId(testId)
+        && isSignedIn()
+        && isValidSelfTestRecord(incoming())
+        && incoming().userId == request.auth.uid
+        && incoming().createdAt == request.time;
+
+      allow delete: if isValidId(testId) && (isOwner(existing().userId) || isAdmin());
+    }
+
+    // Survey submissions (immutable once recorded, deletable by owner)
+    match /surveys/{surveyId} {
+      allow get: if isValidId(surveyId) && (isOwner(existing().userId) || isAdmin());
+      allow list: if isSignedIn() && (existing().userId == request.auth.uid || isBootstrapAdmin());
+
+      allow create: if isValidId(surveyId)
+        && isSignedIn()
+        && isValidSurveySubmission(incoming())
+        && incoming().userId == request.auth.uid
+        && incoming().createdAt == request.time;
+
+      allow delete: if isValidId(surveyId) && (isOwner(existing().userId) || isAdmin());
+    }
+  }
+}

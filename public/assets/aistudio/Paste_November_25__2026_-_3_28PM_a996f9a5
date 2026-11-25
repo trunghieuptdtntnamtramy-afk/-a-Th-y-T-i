@@ -1,0 +1,999 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EDU SMART - Học tập chủ động, tư duy độc lập, sử dụng AI có trách nhiệm">
+  <title>EDU SMART | Trường PTDTNT THPT Quảng Nam</title>
+
+  <style>
+    :root {
+      --blue: #1677d2;
+      --blue-dark: #105ca8;
+      --sky: #eaf6ff;
+      --mint: #e6faf4;
+      --green: #13a887;
+      --ink: #19324d;
+      --muted: #64748b;
+      --line: #e2eaf2;
+      --white: #ffffff;
+      --shadow: 0 8px 28px rgba(30, 90, 145, .09);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: #f5faff;
+      line-height: 1.6;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .top-quote {
+      text-align: center;
+      padding: 10px 16px;
+      background: #e8f5ff;
+      color: #245b88;
+      font-size: 13px;
+      font-style: italic;
+    }
+
+    .school-header {
+      background: white;
+      text-align: center;
+      padding: 17px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .school-header strong {
+      display: block;
+      color: #155e9b;
+      font-size: 14px;
+      letter-spacing: .4px;
+    }
+
+    .school-header h2 {
+      color: #123e68;
+      font-size: 20px;
+      margin-top: 5px;
+    }
+
+    .navbar {
+      background: white;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: auto;
+      min-height: 68px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      color: var(--blue);
+      font-weight: 900;
+      font-size: 25px;
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links button {
+      border: 0;
+      background: transparent;
+      color: #52677e;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .nav-links button:hover,
+    .nav-links button.active {
+      background: var(--sky);
+      color: var(--blue);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 28px 20px 55px;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; animation: appear .25s ease; }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero {
+      padding: 48px 38px;
+      border-radius: 25px;
+      background: linear-gradient(120deg, #e5f4ff, #e4fbf4);
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 25px;
+      align-items: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      color: #125d9e;
+      line-height: 1.2;
+      margin: 12px 0;
+    }
+
+    .hero p { color: #506b83; max-width: 650px; }
+
+    .hero-visual {
+      background: white;
+      border-radius: 24px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-visual .big-icon { font-size: 75px; }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.3px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 11px;
+      padding: 11px 18px;
+      background: var(--blue);
+      color: white;
+      font-weight: 700;
+      display: inline-block;
+      margin-top: 17px;
+    }
+
+    .btn:hover { background: var(--blue-dark); }
+    .btn.secondary { background: #eaf6ff; color: var(--blue); }
+    .btn.green { background: var(--green); }
+
+    .section-title {
+      margin: 35px 0 17px;
+      font-size: 23px;
+      color: #174b78;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 17px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 21px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h3 { color: #205c8d; margin: 8px 0; }
+    .card p { color: var(--muted); font-size: 14px; }
+    .card-icon { font-size: 30px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .stat {
+      background: white;
+      border: 1px solid var(--line);
+      padding: 19px;
+      border-radius: 15px;
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--blue);
+      font-size: 27px;
+    }
+
+    .stat span { color: var(--muted); font-size: 13px; }
+
+    .panel {
+      background: white;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 { color: #174b78; margin-bottom: 14px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .field input, .field select, .field textarea {
+      width: 100%;
+      border: 1px solid #d7e2ed;
+      border-radius: 10px;
+      padding: 11px 12px;
+      outline: none;
+      background: white;
+      color: var(--ink);
+    }
+
+    .field textarea { min-height: 100px; resize: vertical; }
+
+    .field input:focus, .field textarea:focus, .field select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px #1677d21b;
+    }
+
+    .question {
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      margin: 13px 0;
+    }
+
+    .question p { font-weight: 700; margin-bottom: 9px; }
+    .question label { display: block; margin: 7px 0; color: #52677e; }
+
+    .progress-track {
+      height: 11px;
+      border-radius: 20px;
+      background: #e9f0f6;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1683db, #19bd9b);
+      width: 0%;
+      transition: width .3s;
+    }
+
+    .notice {
+      padding: 13px 15px;
+      border-radius: 11px;
+      background: #fff8e8;
+      border: 1px solid #f4dfae;
+      color: #795b1d;
+      font-size: 13px;
+      margin: 13px 0;
+    }
+
+    .success {
+      padding: 12px;
+      background: var(--mint);
+      border-radius: 10px;
+      color: #08775e;
+      margin-top: 12px;
+    }
+
+    .hidden { display: none !important; }
+
+    footer {
+      text-align: center;
+      padding: 25px 15px;
+      color: #718096;
+      background: white;
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    @media (max-width: 800px) {
+      .hero { grid-template-columns: 1fr; padding: 30px 22px; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 560px) {
+      .nav-inner { justify-content: center; }
+      .nav-links { justify-content: center; }
+      .nav-links button { padding: 8px; font-size: 12px; }
+      .grid, .form-grid { grid-template-columns: 1fr; }
+      .container { padding: 18px 13px 40px; }
+      .school-header h2 { font-size: 17px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-quote">
+    “Trong cách học phải lấy tự học làm cốt. Học ở trường, trong sách vở,
+    học lẫn nhau và học dân” – Chủ tịch Hồ Chí Minh.
+  </div>
+
+  <header class="school-header">
+    <strong>SỞ GIÁO DỤC VÀ ĐÀO TẠO THÀNH PHỐ ĐÀ NẴNG</strong>
+    <h2>TRƯỜNG PTDTNT THPT QUẢNG NAM</h2>
+  </header>
+
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="brand">EDU SMART</div>
+      <div class="nav-links">
+        <button class="active" data-page="home">Trang chủ</button>
+        <button data-page="survey">Khảo sát</button>
+        <button data-page="study">Học tập</button>
+        <button data-page="progress">Tiến độ</button>
+        <button data-page="stats">Thống kê</button>
+        <button data-page="account">Tài khoản</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <!-- TRANG CHỦ -->
+    <section id="home" class="page active">
+      <div class="hero">
+        <div>
+          <div class="eyebrow">HỆ SINH THÁI HỌC TẬP THÔNG MINH</div>
+          <h1>Học tập chủ động.<br>Tư duy độc lập.</h1>
+          <p>
+            EDU SMART đồng hành cùng học sinh trong việc xây dựng thói quen
+            tự học, rèn luyện tư duy phản biện và sử dụng trí tuệ nhân tạo
+            một cách có trách nhiệm.
+          </p>
+          <button class="btn" data-go="study">Bắt đầu học tập</button>
+          <button class="btn secondary" data-go="survey">Thực hiện khảo sát</button>
+        </div>
+        <div class="hero-visual">
+          <div class="big-icon">📚</div>
+          <h2>Chủ động mỗi ngày</h2>
+          <p>Học có kế hoạch – Nghĩ trước – Kiểm chứng – Tự đánh giá</p>
+        </div>
+      </div>
+
+      <h2 class="section-title">05 phân hệ học tập</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="card-icon">📅</div>
+          <h3>01. STUDY PLAN</h3>
+          <p>Lập nhiệm vụ, xác định mục tiêu và điều chỉnh kế hoạch học tập phù hợp lịch nội trú.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">💡</div>
+          <h3>02. THINK FIRST</h3>
+          <p>Trình bày suy nghĩ, lập luận và mức độ tự tin trước khi sử dụng AI.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🤖</div>
+          <h3>03. AI COACH</h3>
+          <p>Trợ lý AI gợi mở, đặt câu hỏi và hướng dẫn học sinh từng bước.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🔎</div>
+          <h3>04. FACT CHECK</h3>
+          <p>Kiểm tra nguồn, đối chiếu sách giáo khoa và đánh giá câu trả lời AI.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">✍️</div>
+          <h3>05. SELF TEST</h3>
+          <p>Tự kiểm tra kiến thức, giải thích bằng ngôn ngữ bản thân và vận dụng.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">📈</div>
+          <h3>THEO DÕI TIẾN ĐỘ</h3>
+          <p>Ghi nhận hoạt động học tập và theo dõi sự tiến bộ theo thời gian.</p>
+        </article>
+      </div>
+
+      <h2 class="section-title">Quy trình học tập thông minh</h2>
+      <div class="panel">
+        <p><b>01.</b> Lập kế hoạch → <b>02.</b> Tự suy nghĩ → <b>03.</b> Nhận gợi mở từ AI → <b>04.</b> Kiểm chứng → <b>05.</b> Tự kiểm tra.</p>
+      </div>
+    </section>
+
+    <!-- KHẢO SÁT -->
+    <section id="survey" class="page">
+      <div class="panel">
+        <div class="eyebrow">ĐÁNH GIÁ NĂNG LỰC TỰ HỌC</div>
+        <h2>Khảo sát trước và sau khi sử dụng EDU SMART</h2>
+        <p>Hãy chọn mức độ phù hợp với bản thân. Không có câu trả lời đúng hoặc sai.</p>
+        <div class="field" style="margin-top:16px">
+          <label>Đợt khảo sát</label>
+          <select id="surveyType">
+            <option value="before">Trước khi sử dụng EDU SMART</option>
+            <option value="after">Sau khi sử dụng EDU SMART</option>
+          </select>
+        </div>
+        <div id="surveyQuestions"></div>
+        <button class="btn" id="submitSurvey">Gửi khảo sát</button>
+        <div id="surveyResult" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- HỌC TẬP -->
+    <section id="study" class="page">
+      <h2 class="section-title">Không gian học tập</h2>
+
+      <div class="panel">
+        <h2>📅 STUDY PLAN – Lập kế hoạch học tập</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label>Nhiệm vụ học tập</label>
+            <input id="taskName" placeholder="Ví dụ: Ôn tập bài 5 Lịch sử">
+          </div>
+          <div class="field">
+            <label>Môn học</label>
+            <select id="taskSubject"></select>
+          </div>
+          <div class="field">
+            <label>Mục tiêu</label>
+            <input id="taskGoal" placeholder="Ví dụ: Nắm vững kiến thức trọng tâm">
+          </div>
+          <div class="field">
+            <label>Hạn hoàn thành</label>
+            <input id="taskDate" type="date">
+          </div>
+        </div>
+        <div class="field">
+          <label>Thời gian dự kiến trong giờ tự học</label>
+          <select id="taskTime">
+            <option>Giờ tự học buổi tối</option>
+            <option>Giờ tự học buổi chiều</option>
+            <option>Thời gian cá nhân phù hợp</option>
+          </select>
+        </div>
+        <button class="btn" id="addTask">Thêm nhiệm vụ</button>
+        <div id="taskList"></div>
+      </div>
+
+      <div class="panel">
+        <h2>💡 THINK FIRST – Tư duy trước khi sử dụng AI</h2>
+        <div class="field">
+          <label>Chọn môn học</label>
+          <select id="thinkSubject"></select>
+        </div>
+        <div class="field">
+          <label>Câu hỏi gợi ý</label>
+          <select id="thinkQuestion">
+            <option value="Vì sao cần xây dựng kế hoạch tự học phù hợp với mục tiêu?">Vì sao cần xây dựng kế hoạch tự học phù hợp với mục tiêu?</option>
+            <option value="Theo em, làm thế nào để kiểm chứng một thông tin do AI cung cấp?">Theo em, làm thế nào để kiểm chứng một thông tin do AI cung cấp?</option>
+            <option value="Khi gặp một vấn đề khó, em thường lựa chọn cách giải quyết nào?">Khi gặp một vấn đề khó, em thường lựa chọn cách giải quyết nào?</option>
+            <option value="Em hãy trình bày một kiến thức đã học bằng cách hiểu của mình.">Em hãy trình bày một kiến thức đã học bằng cách hiểu của mình.</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Suy nghĩ và lập luận ban đầu của em</label>
+          <textarea id="thinkAnswer" placeholder="Hãy trình bày suy nghĩ của em trước khi hỏi AI..."></textarea>
+        </div>
+        <div class="field">
+          <label>Mức độ tự tin</label>
+          <select id="thinkConfidence">
+            <option>Rất tự tin</option>
+            <option>Tương đối tự tin</option>
+            <option>Chưa chắc chắn</option>
+            <option>Cần được gợi ý thêm</option>
+          </select>
+        </div>
+        <button class="btn" id="saveThink">Lưu suy nghĩ ban đầu</button>
+        <div id="thinkResult" aria-live="polite"></div>
+      </div>
+
+      <div class="panel">
+        <h2>🤖 AI COACH – Trợ lý AI gợi mở</h2>
+        <div class="notice">
+          AI Coach cần được kết nối với máy chủ AI. Không đặt API key bí mật
+          trực tiếp trong mã HTML hoặc JavaScript công khai.
+        </div>
+        <div class="field">
+          <label>Nội dung em cần hỗ trợ</label>
+          <textarea id="aiQuestion" placeholder="Nhập câu hỏi hoặc nội dung em đang gặp khó khăn..."></textarea>
+        </div>
+        <button class="btn" id="askAI">Yêu cầu gợi mở</button>
+        <div id="aiResult" aria-live="polite"></div>
+      </div>
+
+      <div class="panel">
+        <h2>🔎 FACT CHECK – Kiểm chứng thông tin</h2>
+        <div class="field">
+          <label>Thông tin hoặc câu trả lời AI cần kiểm chứng</label>
+          <textarea id="factContent" placeholder="Dán nội dung cần kiểm chứng..."></textarea>
+        </div>
+        <div class="field">
+          <label>Nguồn đối chiếu (SGK, tài liệu, đường dẫn)</label>
+          <textarea id="factSource" placeholder="Ghi tên sách, bài học, trang hoặc đường dẫn nguồn..."></textarea>
+        </div>
+        <div class="field">
+          <label>Nhận xét và kết luận của em</label>
+          <textarea id="factConclusion" placeholder="Nội dung nào chính xác? Nội dung nào cần kiểm tra thêm? Vì sao?"></textarea>
+        </div>
+        <button class="btn" id="saveFact">Lưu phiếu kiểm chứng</button>
+        <div id="factResult" aria-live="polite"></div>
+      </div>
+
+      <div class="panel">
+        <h2>✍️ SELF TEST – Tự kiểm tra kiến thức</h2>
+        <div class="field">
+          <label>Môn học</label>
+          <select id="testSubject"></select>
+        </div>
+        <div class="field">
+          <label>Nội dung bài học</label>
+          <input id="testLesson" placeholder="Nhập tên bài học">
+        </div>
+        <div class="field">
+          <label>Em hãy giải thích kiến thức bằng ngôn ngữ của mình</label>
+          <textarea id="testExplain" placeholder="Trình bày cách hiểu của em..."></textarea>
+        </div>
+        <div class="field">
+          <label>Em có thể vận dụng kiến thức vào tình huống mới nào?</label>
+          <textarea id="testApply" placeholder="Nêu ví dụ hoặc tình huống vận dụng..."></textarea>
+        </div>
+        <div class="field">
+          <label>Tự đánh giá mức độ hiểu bài</label>
+          <select id="testLevel">
+            <option>Đã hiểu rõ</option>
+            <option>Hiểu phần lớn nội dung</option>
+            <option>Còn một số nội dung chưa hiểu</option>
+            <option>Cần ôn tập lại</option>
+          </select>
+        </div>
+        <button class="btn" id="saveTest">Hoàn thành tự kiểm tra</button>
+        <div id="testResult" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- TIẾN ĐỘ -->
+    <section id="progress" class="page">
+      <h2 class="section-title">Tiến độ học tập cá nhân</h2>
+      <div class="stats">
+        <div class="stat"><strong id="countTasks">0</strong><span>Nhiệm vụ đã tạo</span></div>
+        <div class="stat"><strong id="countDone">0</strong><span>Nhiệm vụ hoàn thành</span></div>
+        <div class="stat"><strong id="countThink">0</strong><span>Lượt Think First</span></div>
+        <div class="stat"><strong id="countTest">0</strong><span>Bài Self Test</span></div>
+      </div>
+      <div class="panel" style="margin-top:20px">
+        <h2>Tỷ lệ hoàn thành nhiệm vụ</h2>
+        <div id="progressText">0% hoàn thành</div>
+        <div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+      </div>
+      <div class="notice">
+        Đây là số liệu hoạt động trên trình duyệt hiện tại. Muốn giáo viên
+        xem tiến độ theo lớp và đồng bộ nhiều thiết bị, cần lưu dữ liệu qua
+        máy chủ có xác thực và phân quyền.
+      </div>
+    </section>
+
+    <!-- THỐNG KÊ -->
+    <section id="stats" class="page">
+      <h2 class="section-title">Thống kê học tập</h2>
+      <div class="panel">
+        <h2>Tổng quan hoạt động</h2>
+        <div class="stats">
+          <div class="stat"><strong id="statSurvey">0</strong><span>Lượt khảo sát</span></div>
+          <div class="stat"><strong id="statFact">0</strong><span>Phiếu Fact Check</span></div>
+          <div class="stat"><strong id="statAI">0</strong><span>Lượt yêu cầu AI</span></div>
+          <div class="stat"><strong id="statTest">0</strong><span>Bài tự kiểm tra</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Đánh giá trước và sau</h2>
+        <p id="surveyCompare">Chưa có đủ dữ liệu khảo sát để so sánh.</p>
+        <div class="notice">
+          Chỉ so sánh khi có dữ liệu khảo sát trước và sau của cùng người tham gia.
+          Không sử dụng số liệu minh họa như kết quả nghiên cứu thực tế.
+        </div>
+      </div>
+    </section>
+
+    <!-- TÀI KHOẢN -->
+    <section id="account" class="page">
+      <h2 class="section-title">Tài khoản EDU SMART</h2>
+      <div class="panel">
+        <h2>Đăng ký / Đăng nhập</h2>
+        <div class="notice">
+          Biểu mẫu dưới đây là phần giao diện. Chưa gửi thông tin lên máy chủ.
+          Không nhập mật khẩu thật vào bản thử nghiệm này.
+        </div>
+        <div class="field">
+          <label>Loại tài khoản</label>
+          <select id="role">
+            <option value="student">Học sinh</option>
+            <option value="teacher">Giáo viên</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Họ và tên</label>
+          <input id="fullName" placeholder="Nhập họ và tên">
+        </div>
+        <div class="field">
+          <label>Ngày tháng năm sinh</label>
+          <input id="birthDate" type="date">
+        </div>
+        <div class="field" id="classField">
+          <label>Lớp</label>
+          <input id="className" placeholder="Ví dụ: 12/3">
+        </div>
+        <div class="field hidden" id="teacherField">
+          <label>Lớp chủ nhiệm</label>
+          <input id="homeroom" placeholder="Lớp chủ nhiệm">
+          <label style="margin-top:10px;display:block">Bộ môn</label>
+          <input id="subjectTeacher" placeholder="Bộ môn giảng dạy">
+        </div>
+        <div class="field">
+          <label>Số điện thoại</label>
+          <input id="phone" type="tel" placeholder="Nhập số điện thoại">
+        </div>
+        <div class="field">
+          <label>Gmail</label>
+          <input id="accountEmail" type="email" placeholder="example@gmail.com">
+        </div>
+        <div class="field">
+          <label>Mật khẩu</label>
+          <input id="accountPassword" type="password" placeholder="Tối thiểu 8 ký tự">
+        </div>
+        <button class="btn" id="registerNotice">Gửi yêu cầu đăng ký</button>
+        <div id="accountResult" aria-live="polite"></div>
+        <p style="font-size:13px;color:#718096;margin-top:15px">
+          Tài khoản giáo viên cần được quản trị viên nhà trường phê duyệt.
+          Vai trò quản trị viên không được tự đăng ký.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <b>EDU SMART</b> – Học tập chủ động · Tư duy độc lập · Sử dụng AI có trách nhiệm
+    <br>Trường PTDTNT THPT Quảng Nam
+  </footer>
+
+  <script>
+    // Điều hướng các trang
+    const pages = document.querySelectorAll('.page');
+    const navButtons = document.querySelectorAll('[data-page]');
+
+    function showPage(id) {
+      pages.forEach(page => page.classList.toggle('active', page.id === id));
+      navButtons.forEach(button =>
+        button.classList.toggle('active', button.dataset.page === id)
+      );
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    navButtons.forEach(button =>
+      button.addEventListener('click', () => showPage(button.dataset.page))
+    );
+
+    document.querySelectorAll('[data-go]').forEach(button =>
+      button.addEventListener('click', () => showPage(button.dataset.go))
+    );
+
+    // Danh sách môn học THPT
+    const subjects = [
+      'Toán học', 'Ngữ văn', 'Tiếng Anh', 'Lịch sử', 'Địa lí',
+      'Vật lí', 'Hóa học', 'Sinh học', 'Tin học', 'Công nghệ',
+      'Giáo dục kinh tế và pháp luật', 'Giáo dục quốc phòng và an ninh',
+      'Giáo dục thể chất', 'Hoạt động trải nghiệm, hướng nghiệp',
+      'Chuyên đề học tập'
+    ];
+
+    ['taskSubject', 'thinkSubject', 'testSubject'].forEach(id => {
+      const select = document.getElementById(id);
+      subjects.forEach(subject => {
+        const option = document.createElement('option');
+        option.textContent = subject;
+        option.value = subject;
+        select.appendChild(option);
+      });
+    });
+
+    // Lưu trạng thái bản trình diễn trong trình duyệt.
+    // Đây KHÔNG phải cơ sở dữ liệu an toàn hoặc hệ thống tài khoản thật.
+    const data = {
+      tasks: [],
+      thinks: [],
+      tests: [],
+      facts: [],
+      surveys: [],
+      aiRequests: 0
+    };
+
+    // Study Plan
+    document.getElementById('addTask').addEventListener('click', () => {
+      const name = document.getElementById('taskName').value.trim();
+      const goal = document.getElementById('taskGoal').value.trim();
+      const date = document.getElementById('taskDate').value;
+
+      if (!name || !goal || !date) {
+        alert('Vui lòng nhập nhiệm vụ, mục tiêu và hạn hoàn thành.');
+        return;
+      }
+
+      data.tasks.push({
+        name,
+        goal,
+        date,
+        subject: document.getElementById('taskSubject').value,
+        time: document.getElementById('taskTime').value,
+        done: false
+      });
+
+      document.getElementById('taskName').value = '';
+      document.getElementById('taskGoal').value = '';
+      renderTasks();
+      updateProgress();
+    });
+
+    function renderTasks() {
+      const list = document.getElementById('taskList');
+      list.innerHTML = '<h3 style="margin-top:20px">Danh sách nhiệm vụ</h3>';
+
+      if (!data.tasks.length) {
+        list.innerHTML += '<p style="color:#718096">Chưa có nhiệm vụ nào.</p>';
+        return;
+      }
+
+      data.tasks.forEach((task, index) => {
+        const item = document.createElement('div');
+        item.className = 'question';
+
+        const title = document.createElement('strong');
+        title.textContent = task.name;
+
+        const detail = document.createElement('p');
+        detail.textContent =
+          task.subject + ' · Hạn: ' + task.date + ' · ' + task.time;
+
+        const goal = document.createElement('p');
+        goal.textContent = 'Mục tiêu: ' + task.goal;
+
+        const status = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = task.done;
+        checkbox.addEventListener('change', () => {
+          task.done = checkbox.checked;
+          renderTasks();
+          updateProgress();
+        });
+
+        status.append(checkbox, document.createTextNode(' Đã hoàn thành'));
+        item.append(title, detail, goal, status);
+        list.appendChild(item);
+      });
+    }
+
+    // Think First
+    document.getElementById('saveThink').addEventListener('click', () => {
+      const answer = document.getElementById('thinkAnswer').value.trim();
+      if (!answer) {
+        alert('Em hãy nhập suy nghĩ ban đầu trước khi lưu.');
+        return;
+      }
+
+      data.thinks.push({
+        subject: document.getElementById('thinkSubject').value,
+        question: document.getElementById('thinkQuestion').value,
+        answer,
+        confidence: document.getElementById('thinkConfidence').value
+      });
+
+      document.getElementById('thinkResult').innerHTML =
+        '<div class="success">Đã ghi nhận suy nghĩ ban đầu. Hệ thống chú trọng quá trình lập luận, không chỉ kết quả đúng hoặc sai.</div>';
+
+      document.getElementById('thinkAnswer').value = '';
+      updateProgress();
+    });
+
+    // AI Coach: chưa kết nối máy chủ AI
+    document.getElementById('askAI').addEventListener('click', () => {
+      const question = document.getElementById('aiQuestion').value.trim();
+      if (!question) {
+        alert('Vui lòng nhập nội dung cần hỗ trợ.');
+        return;
+      }
+
+      document.getElementById('aiResult').innerHTML =
+        '<div class="notice">AI Coach chưa được kết nối máy chủ AI. Khi triển khai thật, hệ thống sẽ gửi câu hỏi đến backend để nhận gợi ý từng bước, không đưa ngay đáp án hoàn chỉnh.</div>';
+    });
+
+    // Fact Check
+    document.getElementById('saveFact').addEventListener('click', () => {
+      const content = document.getElementById('factContent').value.trim();
+      const source = document.getElementById('factSource').value.trim();
+      const conclusion = document.getElementById('factConclusion').value.trim();
+
+      if (!content || !source || !conclusion) {
+        alert('Vui lòng điền đầy đủ nội dung, nguồn đối chiếu và kết luận.');
+        return;
+      }
+
+      data.facts.push({ content, source, conclusion });
+      document.getElementById('factResult').innerHTML =
+        '<div class="success">Đã ghi nhận phiếu kiểm chứng trong phiên trình duyệt này.</div>';
+      updateProgress();
+    });
+
+    // Self Test
+    document.getElementById('saveTest').addEventListener('click', () => {
+      const explain = document.getElementById('testExplain').value.trim();
+      const apply = document.getElementById('testApply').value.trim();
+
+      if (!explain || !apply) {
+        alert('Vui lòng giải thích kiến thức và nêu tình huống vận dụng.');
+        return;
+      }
+
+      data.tests.push({
+        subject: document.getElementById('testSubject').value,
+        lesson: document.getElementById('testLesson').value,
+        explain,
+        apply,
+        level: document.getElementById('testLevel').value
+      });
+
+      document.getElementById('testResult').innerHTML =
+        '<div class="success">Đã ghi nhận bài tự kiểm tra.</div>';
+      updateProgress();
+    });
+
+    // Khảo sát gồm 7 câu
+    const surveyItems = [
+      'Em có thường tự đặt mục tiêu học tập trước khi bắt đầu học không?',
+      'Em có lập kế hoạch và sắp xếp thời gian tự học phù hợp không?',
+      'Khi gặp bài khó, em có tự suy nghĩ trước khi tìm lời giải không?',
+      'Em có thể giải thích kiến thức bằng ngôn ngữ của bản thân không?',
+      'Em có thường sử dụng AI để hỗ trợ học tập không?',
+      'Em có kiểm tra nguồn và đối chiếu câu trả lời AI với sách giáo khoa không?',
+      'Em có thể vận dụng kiến thức đã học vào tình huống mới không?'
+    ];
+
+    const surveyBox = document.getElementById('surveyQuestions');
+
+    surveyItems.forEach((question, index) => {
+      const box = document.createElement('div');
+      box.className = 'question';
+
+      const title = document.createElement('p');
+      title.textContent = (index + 1) + '. ' + question;
+      box.appendChild(title);
+
+      [
+        '1 – Chưa bao giờ',
+        '2 – Hiếm khi',
+        '3 – Thỉnh thoảng',
+        '4 – Thường xuyên',
+        '5 – Luôn luôn'
+      ].forEach((choice, value) => {
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'survey-' + index;
+        input.value = value + 1;
+        label.append(input, document.createTextNode(' ' + choice));
+        box.appendChild(label);
+      });
+
+      surveyBox.appendChild(box);
+    });
+
+    document.getElementById('submitSurvey').addEventListener('click', () => {
+      const answers = [];
+
+      for (let i = 0; i < 7; i++) {
+        const selected = document.querySelector(
+          'input[name="survey-' + i + '"]:checked'
+        );
+
+        if (!selected) {
+          alert('Vui lòng trả lời đủ 7 câu hỏi khảo sát.');
+          return;
+        }
+
+        answers.push(Number(selected.value));
+      }
+
+      const type = document.getElementById('surveyType').value;
+      data.surveys.push({
+        type,
+        answers,
+        average: answers.reduce((a, b) => a + b, 0) / answers.length
+      });
+
+      document.getElementById('surveyResult').innerHTML =
+        '<div class="success">Đã ghi nhận câu trả lời khảo sát trong phiên này.</div>';
+
+      updateProgress();
+      updateSurveyCompare();
+    });
+
+    // Đổi giao diện theo loại tài khoản
+    document.getElementById('role').addEventListener('change', event => {
+      const teacher = event.target.value === 'teacher';
+      document.getElementById('teacherField').classList.toggle('hidden', !teacher);
+      document.getElementById('classField').classList.toggle('hidden', teacher);
+    });
+
+    document.getElementById('registerNotice').addEventListener('click', () => {
+      document.getElementById('accountResult').innerHTML =
+        '<div class="notice">Biểu mẫu đã được nhập ở giao diện thử nghiệm. Chưa tạo tài khoản và chưa gửi OTP. Cần kết nối Firebase Authentication và backend để thực hiện đăng ký an toàn.</div>';
+    });
+
+    // Cập nhật tiến độ
+    function updateProgress() {
+      const total = data.tasks.length;
+      const done = data.tasks.filter(task => task.done).length;
+      const percent = total ? Math.round(done / total * 100) : 0;
+
+      document.getElementById('countTasks').textContent = total;
+      document.getElementById('countDone').textContent = done;
+      document.getElementById('countThink').textContent = data.thinks.length;
+      document.getElementById('countTest').textContent = data.tests.length;
+
+      document.getElementById('progressText').textContent =
+        percent + '% hoàn thành';
+      document.getElementById('progressBar').style.width = percent + '%';
+
+      document.getElementById('statSurvey').textContent = data.surveys.length;
+      document.getElementById('statFact').textContent = data.facts.length;
+      document.getElementById('statAI').textContent = data.aiRequests;
+      document.getElementById('statTest').textContent = data.tests.length;
+    }
+
+    function updateSurveyCompare() {
+      const before = data.surveys.filter(item => item.type === 'before');
+      const after = data.surveys.filter(item => item.type === 'after');
+      const output = document.getElementById('surveyCompare');
+
+      if (!before.length || !after.length) {
+        output.textContent =
+          'Cần có ít nhất một lượt khảo sát trước và một lượt khảo sát sau để so sánh.';
+        return;
+      }
+
+      const average = items =>
+        items.reduce((sum, item) => sum + item.average, 0) / items.length;
+
+      output.textContent =
+        'Điểm trung bình khảo sát trước: ' + average(before).toFixed(2) +
+        '/5. Điểm trung bình khảo sát sau: ' +
+        average(after).toFixed(2) + '/5.';
+    }
+
+    updateProgress();
+  </script>
+</body>
+</html>

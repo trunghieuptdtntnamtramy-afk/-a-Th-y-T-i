@@ -1,0 +1,157 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public/academic profile of an EDU SMART student or teacher (PII isolated in private subcollection).",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "role": { "type": "string", "enum": ["student", "teacher"] },
+        "requestedRole": { "type": "string", "enum": ["student", "teacher"] },
+        "teacherApproved": { "type": "boolean" },
+        "className": { "type": "string", "maxLength": 40 },
+        "homeroom": { "type": "string", "maxLength": 40 },
+        "subjectTeacher": { "type": "string", "maxLength": 80 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "displayName", "role", "requestedRole", "teacherApproved", "createdAt", "updatedAt"]
+    },
+    "UserPrivateInfo": {
+      "title": "UserPrivateInfo",
+      "description": "Isolated PII record for a user (email, phone, birthDate).",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "maxLength": 160 },
+        "phone": { "type": "string", "maxLength": 25 },
+        "birthDate": { "type": "string", "maxLength": 20 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "updatedAt"]
+    },
+    "StudyTask": {
+      "title": "StudyTask",
+      "description": "A Study Plan task created by a student for boarding-school self-study sessions.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "subject": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "goal": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "dueDate": { "type": "string", "minLength": 10, "maxLength": 10, "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "studySlot": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "done": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name", "subject", "goal", "dueDate", "studySlot", "done", "createdAt", "updatedAt"]
+    },
+    "ThinkReflection": {
+      "title": "ThinkReflection",
+      "description": "Initial reasoning captured in Think First before consulting AI Coach.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "subject": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "question": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "answer": { "type": "string", "minLength": 1, "maxLength": 3000 },
+        "confidence": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "subject", "question", "answer", "confidence", "createdAt"]
+    },
+    "AiSession": {
+      "title": "AiSession",
+      "description": "Socratic AI Coach guidance log tied to a user's question.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "subject": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "question": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "priorThinking": { "type": "string", "maxLength": 3000 },
+        "guidance": { "type": "string", "minLength": 1, "maxLength": 8000 },
+        "model": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "subject", "question", "guidance", "model", "createdAt"]
+    },
+    "FactCheckRecord": {
+      "title": "FactCheckRecord",
+      "description": "Student verification log comparing AI or external claims against textbooks and trusted sources.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "content": { "type": "string", "minLength": 1, "maxLength": 3000 },
+        "source": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "conclusion": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "verdict": { "type": "string", "enum": ["accurate", "needs_revision", "inaccurate"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "content", "source", "conclusion", "verdict", "createdAt"]
+    },
+    "SelfTestRecord": {
+      "title": "SelfTestRecord",
+      "description": "Feynman-style self-explanation and real-world transfer check.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "subject": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "lesson": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "explain": { "type": "string", "minLength": 1, "maxLength": 3000 },
+        "apply": { "type": "string", "minLength": 1, "maxLength": 3000 },
+        "level": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "subject", "lesson", "explain", "apply", "level", "createdAt"]
+    },
+    "SurveySubmission": {
+      "title": "SurveySubmission",
+      "description": "Before/after self-regulated learning 7-item Likert survey submission.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "phase": { "type": "string", "enum": ["before", "after"] },
+        "answers": { "type": "array", "description": "7 Likert scores from 1 to 5" },
+        "average": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "phase", "answers", "average", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Public/academic user profile without PII."
+    },
+    "/users/{userId}/private/info": {
+      "schema": { "$ref": "#/entities/UserPrivateInfo" },
+      "description": "PII-isolated private user contact info (email, phone, birthDate)."
+    },
+    "/studyTasks/{taskId}": {
+      "schema": { "$ref": "#/entities/StudyTask" },
+      "description": "User-owned Study Plan tasks."
+    },
+    "/thinkReflections/{thinkId}": {
+      "schema": { "$ref": "#/entities/ThinkReflection" },
+      "description": "User-owned Think First reflections."
+    },
+    "/aiSessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/AiSession" },
+      "description": "User-owned AI Coach Socratic guidance sessions."
+    },
+    "/factChecks/{factId}": {
+      "schema": { "$ref": "#/entities/FactCheckRecord" },
+      "description": "User-owned Fact Check verification records."
+    },
+    "/selfTests/{testId}": {
+      "schema": { "$ref": "#/entities/SelfTestRecord" },
+      "description": "User-owned Self Test records."
+    },
+    "/surveys/{surveyId}": {
+      "schema": { "$ref": "#/entities/SurveySubmission" },
+      "description": "User-owned Before/After self-learning surveys."
+    }
+  }
+}

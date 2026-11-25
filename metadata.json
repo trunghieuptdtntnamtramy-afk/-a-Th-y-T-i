@@ -1,0 +1,6 @@
+{
+  "name": "EDU SMART - Trường PTDTNT THPT Quảng Nam",
+  "description": "Hệ sinh thái học tập thông minh: Học tập chủ động, tư duy độc lập và sử dụng AI có trách nhiệm với Google Workspace và Gemini.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
